@@ -56,7 +56,17 @@ complete -c kitty -l tab-title -d 'The title of the tab' -xn '__kitty_is_message
 
 # Helper functions
 function __kitty_config
-  cat $HOME/.config/kitty/kitty.conf | grep -P "^[^#]" | grep -P "^(?!map)" | awk '{print $1}'
+  set file "$KITTY_CONFIG_DIRECTORY/kitty.conf"
+  if not test -e $file
+    set file "XDG_CONFIG_HOME/kitty/kitty.conf"
+  end
+  if not test -e $file
+    set file "$HOME/.config/kitty/kitty.conf"
+  end
+  if not test -e $file
+    return 0
+  end
+  cat $file | grep -P "^[^#]" | grep -P "^(?!map)" | awk '{print $1"\t"$2}'
 end
 
 function __kitty_is_message
