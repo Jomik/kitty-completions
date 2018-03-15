@@ -15,8 +15,8 @@ complete -c kitty -l session -d 'Path to a file containing the startup session' 
 complete -c kitty -s 1 -l single-instance -d 'If specified only a single instance of kitty will run' -n 'not __kitty_is_message'
 complete -c kitty -l instance-group -d 'Create window within instance group' -xn 'not __kitty_is_message; and __fish_contains_opt -s 1 single-instance'
 
-# Kitty message options
-complete -c kitty -n '__kitty_is_message' -d 'Ensure allow_remote_control yes is set' -xa "
+# Kitty message commands
+complete -c kitty -n '__kitty_needs_subcommand' -d 'Ensure allow_remote_control yes is set' -xa "
   close-tab\t'Close the specified tab(s)'
   close-window\t'Close the specified window(s)'
   focus-window\t'Focus the specified window'
@@ -28,6 +28,8 @@ complete -c kitty -n '__kitty_is_message' -d 'Ensure allow_remote_control yes is
   set-tab-title\t'Set the tab title'
   set-window-title\t'Set the window title'
 "
+
+# new-window completions
 complete -c kitty -s m -l match -d 'The tab to match. Match specifications are of the form: field:regexp' -xn '__kitty_is_message; and __kitty_is_cmd new-window'
 
 function __kitty_config
@@ -36,6 +38,10 @@ end
 
 function __kitty_is_message
   test (commandline | grep "@")
+end
+
+function __kitty_needs_subcommand
+  test (commandline | grep -P '@ [a-z-]*$')
 end
 
 function __kitty_is_cmd
