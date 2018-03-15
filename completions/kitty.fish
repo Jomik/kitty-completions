@@ -12,7 +12,7 @@ complete -c kitty -s d -l directory -d 'Change to specified directory when launc
 complete -c kitty -l detach -d 'Detach from the controlling terminal, if any' -n 'not __kitty_is_message'
 complete -c kitty -l window-layout -d 'The window layout to use on startup' -n 'not __kitty_is_message' -xa 'tall grid vertical stack horizontal'
 complete -c kitty -l session -d 'Path to a file containing the startup session' -rn 'not __kitty_is_message'
-complete -c kitty -s 1 -l single-instance -d 'If specified only a single instance of kitty will run' -n 'not __kitty_is_message'
+complete -c kitty -s 1 -l single-instance -d 'Run only a single instance of kitty' -n 'not __kitty_is_message'
 complete -c kitty -l instance-group -d 'Create window within instance group' -xn 'not __kitty_is_message; and __fish_contains_opt -s 1 single-instance'
 
 # Kitty message commands
@@ -29,9 +29,32 @@ complete -c kitty -n '__kitty_needs_subcommand' -d 'Ensure allow_remote_control 
   set-window-title\t'Set the window title'
 "
 
-# new-window completions
-complete -c kitty -s m -l match -d 'The tab to match. Match specifications are of the form: field:regexp' -xn '__kitty_is_message; and __kitty_is_cmd new-window'
+# match
+complete -c kitty -s m -l match -d 'The tab to match. Match specifications are of the form: field:regexp' -n '__kitty_is_message; and not __kitty_needs_subcommand; and not __kitty_is_cmd ls'
 
+# self
+complete -c kitty -l self -d 'Close the tab this command is run in, rather than the active tab' -n '__kitty_is_message; and __kitty_is_cmd close-window; or __kitty_is_cmd close-tab; or __kitty_is_cmd get-text'
+
+# send-text
+complete -c kitty -l stdin -d 'Read the text to be sent from stdin' -xn '__kitty_is_message; and __kitty_is_cmd send-text'
+complete -c kitty -l from-file -d 'Read the text to be sent from stdin' -rn '__kitty_is_message; and __kitty_is_cmd send-text'
+
+# get-text
+complete -c kitty -l extent -d 'What text to get' -n '__kitty_is_message; and __kitty_is_cmd get-text' -xa "
+  screen\t'All text currently on the screen (default)'
+  selection\t'Currently selected text'
+  all\t'All the screen and scrollback'
+"
+complete -c kitty -l ansi -d 'Include formatting escape codes' -xn '__kitty_is_message; and __kitty_is_cmd get-text'
+
+# new-window
+complete -c kitty -l title -d 'The title of the new window' -xn '__kitty_is_message; and __kitty_is_cmd new-window; and __fish_not_contain_opt new-tab'
+complete -c kitty -l cwd -d 'The initial working directory for the new window' -rn '__kitty_is_message; and __kitty_is_cmd new-window'
+complete -c kitty -l new-tab -d 'Open a new tab' -rn '__kitty_is_message; and __kitty_is_cmd new-window'
+complete -c kitty -l tab-title -d 'The title of the tab' -xn '__kitty_is_message; and __kitty_is_cmd new-window; and __fish_contains_opt new-tab'
+
+
+# Helper functions
 function __kitty_config
   cat $HOME/.config/kitty/kitty.conf | grep -P "^[^#]" | grep -P "^(?!map)" | awk '{print $1}'
 end
