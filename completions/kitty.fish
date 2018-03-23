@@ -77,13 +77,13 @@ function __kitty_config
 end
 
 function __kitty_is_message
-  test (commandline | grep "^kitty\W+@")
+  commandline | string match -qr "^kitty\W+@"
 end
 
 function __kitty_needs_subcommand
-  test (commandline | grep -P '^kitty\W+@\W+[a-z-]*$')
+  commandline | string -qr '^kitty\W+@\W+[a-z-]*$'
 end
 
 function __kitty_is_cmd
-  test (commandline | grep "^kitty\W+@\W+$argv[1]")
+  commandline | string -qr "^kitty\W+@\W+$argv[1]"
 end
